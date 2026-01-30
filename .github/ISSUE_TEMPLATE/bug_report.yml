@@ -1,0 +1,23 @@
+name: 🐛 Bug Report
+description: Report a bug to help us improve ChitraHarsha
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please provide as much detail as possible.
+  - type: input
+    id: device
+    attributes:
+      label: Device Model
+      placeholder: e.g., Pixel 9 Pro
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: How did you encounter this bug?
+      placeholder: 1. Launch app...
+    validations:
+      required: true

@@ -1,0 +1,1341 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>ChitraHarsha THE KAAL -CHAKRA PROTOCOL</title>
+
+    <!-- Mobile Excellence & Android Integration -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="theme-color" content="#050510" />
+
+    <!-- SEO & Social Mastery -->
+    <meta
+      name="description"
+      content="ChitraHarsha: THE KAAL -CHAKRA PROTOCOL. A cinematic future-tech game of time and speed."
+    />
+    <meta name="author" content="IAH Games" />
+    <meta
+      property="og:title"
+      content="ChitraHarsha: THE KAAL -CHAKRA PROTOCOL"
+    />
+    <meta
+      property="og:description"
+      content="Master the timeline in this high-performance cinematic game. Future-ready for Android 15."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="cover.png" />
+
+    <!-- PWA & Native Shield -->
+    <link rel="manifest" href="manifest.json" />
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("sw.js").catch(() => {});
+        });
+      }
+    </script>
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="icon.png" />
+    <link rel="apple-touch-icon" href="icon.png" />
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Cinzel+Decorative:wght@700&family=Rajdhani:wght@500;700&display=swap");
+
+      :root {
+        --neon-cyan: #00f3ff;
+        --neon-orange: #ff4400;
+        --ancient-gold: #d4af37;
+        --void-dark: #050510;
+        --chakra-purple: #bc13fe;
+        --glass-panel: rgba(10, 10, 25, 0.9);
+        --meta-blue: #1877f2;
+      }
+
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: var(--void-dark);
+        font-family: "Rajdhani", sans-serif;
+        color: white;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      #game-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+        perspective: 1000px;
+      }
+
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* --- UI LAYOUT --- */
+      #ui-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      /* HUD */
+      .hud-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 20px;
+        background: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.95),
+          transparent
+        );
+        border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        backdrop-filter: blur(5px);
+      }
+
+      .hud-group {
+        display: flex;
+        gap: 15px;
+      }
+
+      .stat-module {
+        background: var(--glass-panel);
+        border: 1px solid var(--ancient-gold);
+        padding: 10px 20px;
+        border-radius: 4px;
+        position: relative;
+        box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .stat-module::before {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        width: 10px;
+        height: 10px;
+        border-top: 2px solid var(--neon-cyan);
+        border-left: 2px solid var(--neon-cyan);
+      }
+
+      .stat-label {
+        font-family: "Cinzel Decorative", serif;
+        font-size: 0.7rem;
+        color: var(--ancient-gold);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .stat-value {
+        font-family: "Orbitron", sans-serif;
+        font-size: 1.4rem;
+        color: white;
+        text-shadow: 0 0 5px var(--neon-cyan);
+      }
+      #timer-val {
+        color: var(--neon-orange);
+      }
+
+      /* USER PROFILE IN HUD */
+      #hud-profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--glass-panel);
+        border: 1px solid var(--neon-cyan);
+        padding: 5px 15px 5px 5px;
+        border-radius: 30px;
+      }
+      #hud-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--neon-cyan);
+      }
+      #hud-username {
+        font-family: "Orbitron";
+        font-size: 0.9rem;
+        color: var(--neon-cyan);
+      }
+
+      /* NEURAL ENGINE LOGS */
+      #neural-log {
+        position: absolute;
+        top: 120px;
+        right: 20px;
+        width: 300px;
+        height: 150px;
+        overflow: hidden;
+        font-family: "Courier New", monospace;
+        font-size: 0.8rem;
+        color: var(--neon-cyan);
+        text-shadow: 0 0 2px var(--neon-cyan);
+        background: rgba(0, 20, 0, 0.6);
+        border-left: 2px solid var(--neon-cyan);
+        padding: 10px;
+        display: flex;
+        flex-direction: column-reverse;
+        opacity: 0.8;
+        pointer-events: none;
+      }
+      .log-entry {
+        margin-bottom: 4px;
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      /* CONTROLS */
+      .controls-area {
+        padding: 30px;
+        pointer-events: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+        padding-bottom: 50px;
+      }
+
+      .control-btn {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 2px solid var(--ancient-gold);
+        background: rgba(0, 0, 0, 0.5);
+        color: var(--ancient-gold);
+        font-size: 24px;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: "Orbitron";
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        -webkit-tap-highlight-color: transparent;
+      }
+      .control-btn:active {
+        background: var(--ancient-gold);
+        color: black;
+        transform: scale(0.95);
+      }
+
+      #btn-ability {
+        width: 110px;
+        height: 110px;
+        border-color: var(--neon-cyan);
+        color: var(--neon-cyan);
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        font-weight: 900;
+      }
+      #btn-ability.active {
+        background: var(--neon-cyan);
+        color: black;
+        box-shadow: 0 0 50px var(--neon-cyan);
+      }
+
+      /* SCREENS & MENUS */
+      .overlay-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(5, 5, 12, 0.98);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        pointer-events: auto;
+        backdrop-filter: blur(15px);
+        transition: opacity 0.5s;
+      }
+
+      .game-title {
+        font-family: "Cinzel Decorative", cursive;
+        font-size: 3.5rem;
+        text-align: center;
+        background: linear-gradient(180deg, var(--ancient-gold), #8a6e2f);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+        margin-bottom: 5px;
+        letter-spacing: 2px;
+      }
+      .game-subtitle {
+        font-family: "Orbitron";
+        color: var(--neon-cyan);
+        margin-bottom: 30px;
+        letter-spacing: 4px;
+        font-size: 1rem;
+        text-transform: uppercase;
+        text-shadow: 0 0 10px var(--neon-cyan);
+      }
+
+      /* AUTH SCREEN */
+      .auth-box {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid #333;
+        padding: 30px;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .avatar-upload {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 2px dashed var(--neon-cyan);
+        overflow: hidden;
+        cursor: pointer;
+        background: #111;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .avatar-upload img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+      }
+      .avatar-upload span {
+        font-size: 2rem;
+        color: #555;
+      }
+      .avatar-upload:hover {
+        border-color: white;
+      }
+
+      input[type="text"] {
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid #555;
+        color: white;
+        font-family: "Orbitron";
+        font-size: 1.2rem;
+        text-align: center;
+        width: 100%;
+        padding: 10px;
+        outline: none;
+      }
+      input[type="text"]:focus {
+        border-color: var(--neon-cyan);
+      }
+
+      .btn-primary {
+        padding: 15px 40px;
+        font-family: "Orbitron";
+        font-size: 1.1rem;
+        background: var(--neon-cyan);
+        color: black;
+        border: none;
+        cursor: pointer;
+        clip-path: polygon(10% 0, 100% 0, 100% 80%, 90% 100%, 0 100%, 0 20%);
+        font-weight: 900;
+        letter-spacing: 1px;
+        width: 100%;
+      }
+      .btn-primary:hover {
+        background: white;
+        box-shadow: 0 0 20px white;
+      }
+
+      /* SUBSCRIPTION GRID */
+      .sub-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        max-width: 800px;
+        width: 90%;
+      }
+      .sub-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid #444;
+        padding: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+      .sub-card.selected {
+        border: 2px solid var(--neon-cyan);
+        background: rgba(0, 243, 255, 0.05);
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+      }
+      .char-img {
+        position: absolute;
+        right: 10px;
+        bottom: 5px;
+        opacity: 0.15;
+        font-size: 2.5rem;
+      }
+
+      #hint-box {
+        position: absolute;
+        bottom: 180px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        border: 1px solid var(--neon-orange);
+        padding: 10px 20px;
+        color: var(--neon-orange);
+        font-family: "Courier New";
+        display: none;
+        animation: popUp 0.5s;
+        text-align: center;
+        width: 80%;
+        max-width: 400px;
+        z-index: 50;
+      }
+      @keyframes popUp {
+        0% {
+          transform: translate(-50%, 20px);
+          opacity: 0;
+        }
+        100% {
+          transform: translate(-50%, 0);
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .game-title {
+          font-size: 2rem;
+        }
+        .sub-grid {
+          grid-template-columns: 1fr;
+          max-height: 40vh;
+          overflow-y: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container">
+      <canvas id="gameCanvas"></canvas>
+
+      <!-- UI Overlay -->
+      <div id="ui-layer" style="display: none">
+        <div class="hud-top">
+          <div class="hud-group">
+            <div id="hud-profile">
+              <img id="hud-avatar" src="" alt="User" />
+              <span id="hud-username">Pilot</span>
+            </div>
+            <div class="stat-module">
+              <div class="stat-label">Kaal-Chakra</div>
+              <div class="stat-value" id="timer-val">48:00</div>
+            </div>
+            <div class="stat-module">
+              <div class="stat-label">Sector</div>
+              <div class="stat-value" id="level-val">01</div>
+            </div>
+          </div>
+          <div class="stat-module" style="border-color: var(--chakra-purple)">
+            <div class="stat-label">Neural Link</div>
+            <div class="stat-value" id="ai-val">0%</div>
+          </div>
+        </div>
+
+        <div id="neural-log"></div>
+        <div id="hint-box"></div>
+
+        <div class="controls-area">
+          <button
+            class="control-btn"
+            onmousedown="game.input('left')"
+            ontouchstart="game.input('left')"
+          >
+            ◀<span>LEFT</span>
+          </button>
+          <button
+            class="control-btn"
+            id="btn-ability"
+            onmousedown="game.input('ability')"
+            ontouchstart="game.input('ability')"
+          >
+            ⚛<span>ABILITY</span>
+          </button>
+          <button
+            class="control-btn"
+            onmousedown="game.input('right')"
+            ontouchstart="game.input('right')"
+          >
+            ▶<span>RIGHT</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- AUTH SCREEN -->
+      <div id="auth-screen" class="overlay-screen">
+        <div class="game-title">CHITRA HARSHA</div>
+        <div class="game-subtitle">THE KAAL -CHAKRA PROTOCOL</div>
+
+        <div class="auth-box">
+          <label class="avatar-upload" for="cam-input">
+            <img id="avatar-preview" />
+            <span id="avatar-icon">📷</span>
+            <input
+              type="file"
+              id="cam-input"
+              accept="image/*"
+              capture="user"
+              style="display: none"
+              onchange="auth.handleImage(this)"
+            />
+          </label>
+          <div style="font-size: 0.8rem; color: #888">
+            Tap camera to verify identity
+          </div>
+          <input
+            type="text"
+            id="username-input"
+            placeholder="ENTER PILOT ID"
+            maxlength="12"
+          />
+          <button class="btn-primary" onclick="auth.login()">
+            ESTABLISH LINK
+          </button>
+        </div>
+      </div>
+
+      <!-- MENU SCREEN -->
+      <div id="menu-screen" class="overlay-screen" style="display: none">
+        <div class="game-title" style="font-size: 2.5rem">
+          PROTOCOL SELECTION
+        </div>
+        <div class="sub-grid">
+          <div class="sub-card selected" onclick="menu.select(this, 'chitra')">
+            <div class="sub-header" style="color: var(--neon-cyan)">
+              CHITRA (Stasis)
+            </div>
+            <p style="color: #aaa; font-size: 0.8rem">Stops the Time Wheel.</p>
+            <div class="char-img">❄️</div>
+          </div>
+          <div class="sub-card" onclick="menu.select(this, 'harshul')">
+            <div class="sub-header" style="color: var(--neon-orange)">
+              HARSHUL (Kinetic)
+            </div>
+            <p style="color: #aaa; font-size: 0.8rem">Incinerates matter.</p>
+            <div class="char-img">🔥</div>
+          </div>
+          <div class="sub-card" onclick="menu.select(this, 'vajra')">
+            <div class="sub-header" style="color: yellow">VAJRA (Velocity)</div>
+            <p style="color: #aaa; font-size: 0.8rem">Lightning speed.</p>
+            <div class="char-img">⚡</div>
+          </div>
+          <div class="sub-card" onclick="menu.select(this, 'brahma')">
+            <div class="sub-header" style="color: var(--chakra-purple)">
+              BRAHMA (Neural)
+            </div>
+            <p style="color: #aaa; font-size: 0.8rem">Auto-Pilot AI.</p>
+            <div class="char-img">🧠</div>
+          </div>
+        </div>
+        <button
+          class="btn-primary"
+          style="margin-top: 30px; width: auto"
+          onclick="game.start()"
+        >
+          ENGAGE ENGINE
+        </button>
+      </div>
+
+      <!-- GAME OVER SCREEN -->
+      <div id="end-screen" class="overlay-screen" style="display: none">
+        <h2 id="end-title" class="game-title">DERAILED</h2>
+        <p id="end-reason" style="color: white; font-size: 1.2rem">
+          Timeline Lost.
+        </p>
+        <div
+          style="
+            margin: 10px;
+            color: var(--ancient-gold);
+            font-family: &quot;Orbitron&quot;;
+          "
+        >
+          HIGH SCORE: <span id="high-score-val">0</span>
+        </div>
+        <button
+          class="btn-primary"
+          style="width: auto"
+          onclick="location.reload()"
+        >
+          REBOOT
+        </button>
+      </div>
+    </div>
+
+    <script>
+      /**
+       * CHITRA HARSHA: THE KAAL -CHAKRA PROTOCOL
+       * Version 3.1 Commercial Release (Vande Bharat Edition)
+       */
+
+      /* --- AUTH MODULE --- */
+      const auth = {
+        userImage: null,
+        username: "Pilot",
+
+        handleImage: function (input) {
+          if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const img = document.getElementById("avatar-preview");
+              img.src = e.target.result;
+              img.style.display = "block";
+              document.getElementById("avatar-icon").style.display = "none";
+
+              auth.userImage = new Image();
+              auth.userImage.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+          }
+        },
+
+        login: function () {
+          const name = document.getElementById("username-input").value;
+          if (name) this.username = name;
+
+          document.getElementById("hud-username").innerText = this.username;
+          if (auth.userImage)
+            document.getElementById("hud-avatar").src = auth.userImage.src;
+
+          document.getElementById("auth-screen").style.opacity = 0;
+          setTimeout(() => {
+            document.getElementById("auth-screen").style.display = "none";
+            document.getElementById("menu-screen").style.display = "flex";
+          }, 500);
+        },
+      };
+
+      /* --- AUDIO ENGINE --- */
+      class AudioEngine {
+        constructor() {
+          this.ctx = null;
+          this.masterGain = null;
+          this.initialized = false;
+        }
+
+        init() {
+          if (this.initialized) return;
+          try {
+            const AudioContext =
+              window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContext();
+            this.masterGain = this.ctx.createGain();
+            this.masterGain.gain.value = 0.3;
+            this.masterGain.connect(this.ctx.destination);
+            this.initialized = true;
+            this.startTrainAmbience();
+          } catch (e) {
+            console.warn("Audio blocked");
+          }
+        }
+
+        startTrainAmbience() {
+          if (!this.ctx) return;
+          // Low frequency hum
+          const osc = this.ctx.createOscillator();
+          osc.frequency.value = 60;
+          const gain = this.ctx.createGain();
+          gain.gain.value = 0.1;
+          osc.connect(gain);
+          gain.connect(this.masterGain);
+          osc.start();
+
+          // Rhythmic track noise
+          setInterval(() => {
+            if (game && game.state.active) {
+              this.playNoisePulse(game.state.speed);
+            }
+          }, 300);
+        }
+
+        playNoisePulse(speed) {
+          if (!this.ctx || this.ctx.state !== "running") return;
+          const bufferSize = this.ctx.sampleRate * 0.1;
+          const buffer = this.ctx.createBuffer(
+            1,
+            bufferSize,
+            this.ctx.sampleRate,
+          );
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+          const noise = this.ctx.createBufferSource();
+          noise.buffer = buffer;
+          const gain = this.ctx.createGain();
+          gain.gain.value = 0.05 * speed;
+          const filter = this.ctx.createBiquadFilter();
+          filter.type = "lowpass";
+          filter.frequency.value = 800;
+
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(this.masterGain);
+          noise.start();
+        }
+
+        playSFX(type) {
+          if (!this.ctx || this.ctx.state !== "running") return;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.connect(gain);
+          gain.connect(this.masterGain);
+          const t = this.ctx.currentTime;
+
+          if (type === "move") {
+            osc.frequency.setValueAtTime(300, t);
+            osc.frequency.exponentialRampToValueAtTime(100, t + 0.2);
+            gain.gain.setValueAtTime(0.1, t);
+            gain.gain.linearRampToValueAtTime(0, t + 0.2);
+            osc.start(t);
+            osc.stop(t + 0.2);
+          } else if (type === "horn") {
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(400, t);
+            osc.frequency.linearRampToValueAtTime(350, t + 0.5);
+            gain.gain.setValueAtTime(0.2, t);
+            gain.gain.linearRampToValueAtTime(0, t + 0.5);
+            osc.start(t);
+            osc.stop(t + 0.5);
+          }
+        }
+      }
+
+      /* --- RENDER ENGINE --- */
+      class RenderEngine {
+        constructor(ctx, width, height) {
+          this.ctx = ctx;
+          this.w = width;
+          this.h = height;
+          this.horizonY = height * 0.35;
+          this.bottomY = height;
+          this.vanishX = width / 2;
+          this.stars = Array(60)
+            .fill()
+            .map(() => ({
+              x: Math.random() * width,
+              y: Math.random() * height,
+              z: Math.random() * 2,
+            }));
+        }
+
+        updateDimensions(width, height) {
+          this.w = width;
+          this.h = height;
+          this.horizonY = height * 0.35;
+          this.bottomY = height;
+          this.vanishX = width / 2;
+        }
+
+        project(lane, distancePct) {
+          const scale = 1 - distancePct / 100;
+          const laneWidthBottom = this.w / 2.5;
+          const laneCenterBottom =
+            this.w / 2 + (lane - 1) * (laneWidthBottom / 1.2);
+          const x =
+            laneCenterBottom +
+            (this.vanishX - laneCenterBottom) * (distancePct / 100);
+          const y =
+            this.bottomY - (this.bottomY - this.horizonY) * (distancePct / 100);
+          return { x, y, scale: Math.max(0.01, scale) };
+        }
+
+        clear(speed) {
+          const ctx = this.ctx;
+          // Cinematic Sky
+          const grad = ctx.createLinearGradient(0, 0, 0, this.h);
+          grad.addColorStop(0, "#000");
+          grad.addColorStop(0.5, "#1a0a2e");
+          grad.addColorStop(1, "#2d1b4e");
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, this.w, this.h);
+
+          // Star Warp
+          ctx.fillStyle = "#fff";
+          this.stars.forEach((s) => {
+            s.x = (s.x - this.vanishX) * (1 + speed * 0.03) + this.vanishX;
+            s.y = (s.y - this.horizonY) * (1 + speed * 0.03) + this.horizonY;
+            s.z += speed * 0.1;
+            if (s.x < 0 || s.x > this.w || s.y < 0 || s.y > this.h) {
+              s.x = Math.random() * this.w;
+              s.y = Math.random() * (this.h - this.horizonY) + this.horizonY;
+            }
+            const size = Math.random() * 2;
+            // Motion Blur
+            if (speed > 1.5) {
+              ctx.beginPath();
+              ctx.strokeStyle = `rgba(255,255,255,${Math.random() * 0.5})`;
+              ctx.lineWidth = size;
+              ctx.moveTo(s.x, s.y);
+              ctx.lineTo(
+                s.x + (s.x - this.vanishX) * 0.1,
+                s.y + (s.y - this.horizonY) * 0.1,
+              );
+              ctx.stroke();
+            } else {
+              ctx.beginPath();
+              ctx.arc(s.x, s.y, size, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          });
+
+          // Sun/Moon
+          ctx.shadowBlur = 50;
+          ctx.shadowColor = "#d4af37";
+          ctx.beginPath();
+          ctx.arc(this.vanishX, this.horizonY - 80, 80, 0, Math.PI * 2);
+          ctx.fillStyle = "#000";
+          ctx.fill();
+          ctx.strokeStyle = "#d4af37";
+          ctx.lineWidth = 3;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+
+        drawTrack(speed) {
+          const ctx = this.ctx;
+          // Ground Grid
+          ctx.strokeStyle = "rgba(0, 243, 255, 0.1)";
+          ctx.lineWidth = 1;
+          // Verticals
+          for (let i = -6; i <= 6; i++) {
+            const startX = this.vanishX + (i * this.w) / 3.5;
+            ctx.beginPath();
+            ctx.moveTo(startX, this.bottomY);
+            ctx.lineTo(this.vanishX, this.horizonY);
+            ctx.stroke();
+          }
+
+          // Overhead Catenary Poles (Real World Touch)
+          ctx.strokeStyle = "#555";
+          ctx.lineWidth = 4;
+          const poleFreq = 20;
+          const speedOffset = ((Date.now() / 10) * speed) % 100;
+
+          // Draw Poles on Left Side
+          for (let d = 0; d < 100; d += poleFreq) {
+            let actualD = d - speedOffset / 5;
+            if (actualD < 0) actualD += 100;
+
+            // Perspective for pole base
+            const pBase = this.project(0, actualD);
+            const poleH = 200 * pBase.scale;
+            const poleX = pBase.x - 300 * pBase.scale; // Offset to left
+
+            if (pBase.scale > 0.1) {
+              ctx.beginPath();
+              ctx.moveTo(poleX, pBase.y);
+              ctx.lineTo(poleX, pBase.y - poleH);
+              // Cantilever arm
+              ctx.lineTo(pBase.x, pBase.y - poleH);
+              ctx.stroke();
+            }
+          }
+
+          // Horizontal Track Sleepers (Moving)
+          ctx.strokeStyle = "rgba(0, 243, 255, 0.15)";
+          ctx.lineWidth = 1;
+          for (let d = 0; d < 100; d += 5) {
+            let actualD = d - speedOffset / 20;
+            if (actualD < 0) actualD += 100;
+            const y =
+              this.bottomY - (this.bottomY - this.horizonY) * (actualD / 100);
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(this.w, y);
+            ctx.stroke();
+          }
+
+          // Main Rails
+          ctx.strokeStyle = "rgba(212, 175, 55, 0.5)";
+          ctx.lineWidth = 4;
+          [0, 1, 2].forEach((l) => {
+            const pBot = this.project(l, 0);
+            const pTop = this.project(l, 100);
+            const wBot = 40;
+            const wTop = 1;
+            ctx.beginPath();
+            ctx.moveTo(pBot.x - wBot, pBot.y);
+            ctx.lineTo(pTop.x - wTop, pTop.y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(pBot.x + wBot, pBot.y);
+            ctx.lineTo(pTop.x + wTop, pTop.y);
+            ctx.stroke();
+          });
+        }
+
+        drawTrain(lane, type, userImg) {
+          const ctx = this.ctx;
+          const p = this.project(lane, 12); // Engine pos
+          const scale = p.scale;
+          const size = 140 * scale; // Increased size for detail
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+
+          const shake = Math.random() * 2 * scale;
+          ctx.translate(shake, shake);
+
+          const glowColor =
+            type === "vajra"
+              ? "#ffff00"
+              : type === "harshul"
+                ? "#ff4400"
+                : "#00f3ff";
+
+          // --- 1. COACH (Behind) ---
+          this.drawCoach(ctx, 0, -size * 0.45, size, scale, glowColor);
+
+          // --- 2. ENGINE (Vande Bharat Inspired) ---
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = glowColor;
+
+          // Main Body (White)
+          ctx.fillStyle = "#f0f0f0";
+          ctx.beginPath();
+          // Base
+          ctx.moveTo(-size / 2.2, 0);
+          ctx.lineTo(size / 2.2, 0);
+          // Sides up
+          ctx.lineTo(size / 2, -size / 1.4);
+          // Aerodynamic Nose curve
+          ctx.quadraticCurveTo(0, -size * 1.2, -size / 2, -size / 1.4);
+          ctx.closePath();
+          ctx.fill();
+
+          // Blue Band (Signature)
+          ctx.fillStyle = "#1877f2";
+          ctx.beginPath();
+          ctx.moveTo(-size / 2.1, -size / 5);
+          ctx.lineTo(size / 2.1, -size / 5);
+          ctx.lineTo(size / 2.15, -size / 3);
+          ctx.lineTo(-size / 2.15, -size / 3);
+          ctx.fill();
+
+          // Cockpit Glass (Dark)
+          ctx.fillStyle = "#111";
+          ctx.beginPath();
+          ctx.moveTo(-size / 3, -size / 1.6);
+          ctx.lineTo(size / 3, -size / 1.6);
+          ctx.quadraticCurveTo(size / 3.5, -size / 1.1, 0, -size / 1.1); // Top curve
+          ctx.quadraticCurveTo(
+            -size / 3.5,
+            -size / 1.1,
+            -size / 3,
+            -size / 1.6,
+          );
+          ctx.fill();
+
+          // Pantograph (Power)
+          ctx.strokeStyle = "#333";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(0, -size);
+          ctx.lineTo(-size / 3, -size * 1.1);
+          ctx.lineTo(0, -size * 1.2);
+          ctx.lineTo(size / 3, -size * 1.1);
+          ctx.lineTo(0, -size);
+          ctx.stroke();
+
+          // Bogie/Wheels (Cowcatcher area)
+          ctx.fillStyle = "#333";
+          ctx.beginPath();
+          ctx.moveTo(-size / 2.2, 0);
+          ctx.lineTo(size / 2.2, 0);
+          ctx.lineTo(size / 3, size / 5);
+          ctx.lineTo(-size / 3, size / 5);
+          ctx.fill();
+
+          // Lights
+          ctx.fillStyle = "#fff";
+          ctx.shadowBlur = 30;
+          ctx.shadowColor = "#fff";
+          ctx.beginPath();
+          ctx.ellipse(
+            -size / 3.5,
+            -size / 2,
+            size / 15,
+            size / 30,
+            0,
+            0,
+            Math.PI * 2,
+          );
+          ctx.fill();
+          ctx.beginPath();
+          ctx.ellipse(
+            size / 3.5,
+            -size / 2,
+            size / 15,
+            size / 30,
+            0,
+            0,
+            Math.PI * 2,
+          );
+          ctx.fill();
+          ctx.shadowBlur = 0;
+
+          // USER AVATAR (Holographic projection inside glass)
+          if (userImg) {
+            ctx.save();
+            ctx.globalAlpha = 0.8;
+            ctx.beginPath();
+            ctx.arc(0, -size / 1.3, size / 8, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(
+              userImg,
+              -size / 8,
+              -size / 1.3 - size / 8,
+              size / 4,
+              size / 4,
+            );
+            ctx.restore();
+          }
+
+          ctx.restore();
+        }
+
+        drawCoach(ctx, x, y, size, scale, color) {
+          ctx.save();
+          ctx.translate(x, y - size / 1.8);
+          ctx.scale(0.85, 0.85); // Perspective scaling
+
+          // Coach Body
+          ctx.fillStyle = "#e0e0e0"; // White/Grey
+          ctx.fillRect(-size / 2.1, -size / 1.2, size / 1.05, size / 1.2);
+
+          // Blue Stripe
+          ctx.fillStyle = "#1877f2";
+          ctx.fillRect(-size / 2.1, -size / 2.5, size / 1.05, size / 10);
+
+          // Windows & Passengers
+          ctx.fillStyle = "#222";
+          const winW = size / 5;
+          const winH = size / 4;
+          const spacing = size / 3.5;
+
+          for (let i = -1; i <= 1; i++) {
+            const wx = i * spacing;
+            const wy = -size / 1.4;
+
+            // Window Glass
+            ctx.fillStyle = "#1a1a2e";
+            ctx.fillRect(wx - winW / 2, wy, winW, winH);
+
+            // Real World Passenger Silhouette
+            ctx.fillStyle = "#000";
+            ctx.beginPath();
+            // Head
+            ctx.arc(wx, wy + winH / 2, winW / 3.5, 0, Math.PI * 2);
+            // Shoulders
+            ctx.arc(wx, wy + winH, winW / 2, Math.PI, 0);
+            ctx.fill();
+
+            // Phone/Device Glow
+            if (Math.random() > 0.5) {
+              ctx.fillStyle = "#aaf";
+              ctx.globalAlpha = 0.5;
+              ctx.beginPath();
+              ctx.arc(
+                wx + winW / 5,
+                wy + winH / 1.5,
+                2 * scale,
+                0,
+                Math.PI * 2,
+              );
+              ctx.fill();
+              ctx.globalAlpha = 1.0;
+            }
+          }
+
+          // Connector
+          ctx.fillStyle = "#111";
+          ctx.fillRect(-size / 6, 0, size / 3, size / 10);
+
+          ctx.restore();
+        }
+
+        drawObject(obj) {
+          const ctx = this.ctx;
+          const p = this.project(obj.lane, obj.distance);
+          const size = 90 * p.scale;
+          ctx.save();
+          ctx.translate(p.x, p.y);
+
+          // Cyber Obstacle
+          ctx.fillStyle = "#111";
+          ctx.strokeStyle = "#f04";
+          ctx.lineWidth = 3;
+          ctx.shadowBlur = 15;
+          ctx.shadowColor = "#f04";
+
+          ctx.beginPath();
+          ctx.moveTo(0, -size);
+          ctx.lineTo(size / 2, 0);
+          ctx.lineTo(-size / 2, 0);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.restore();
+        }
+      }
+
+      /* --- GAME LOGIC --- */
+      class Game {
+        constructor() {
+          this.canvas = document.getElementById("gameCanvas");
+          this.ctx = this.canvas.getContext("2d");
+          this.resize();
+          this.renderer = new RenderEngine(
+            this.ctx,
+            this.canvas.width,
+            this.canvas.height,
+          );
+          this.audio = new AudioEngine();
+          this.reset();
+          this.highScore =
+            parseInt(localStorage.getItem("cyberheritage_highscore")) || 0;
+          document.getElementById("high-score-val").innerText = this.highScore;
+          window.addEventListener("resize", () => this.resize());
+        }
+
+        resize() {
+          this.canvas.width = window.innerWidth;
+          this.canvas.height = window.innerHeight;
+          if (this.renderer)
+            this.renderer.updateDimensions(
+              this.canvas.width,
+              this.canvas.height,
+            );
+        }
+
+        reset() {
+          this.state = {
+            active: false,
+            lane: 1,
+            speed: 1,
+            score: 0,
+            level: 1,
+            time: 48 * 60,
+            obstacles: [],
+            sub: "chitra",
+            abilityActive: false,
+          };
+        }
+
+        input(action) {
+          if (!this.state.active) return;
+          if (action === "left" && this.state.lane > 0) {
+            this.state.lane--;
+            this.audio.playSFX("move");
+          }
+          if (action === "right" && this.state.lane < 2) {
+            this.state.lane++;
+            this.audio.playSFX("move");
+          }
+          if (action === "ability") this.activateAbility();
+        }
+
+        /* --- COLLISION PERFORMANCE OPTIMIZATION (2026) --- */
+        checkCollision(o) {
+          return Math.abs(o.distance - 12) < 5 && o.lane === this.state.lane;
+        }
+
+        activateAbility() {
+          if (this.state.abilityActive) return;
+          this.state.abilityActive = true;
+          document.getElementById("btn-ability").classList.add("active");
+          this.audio.playSFX("horn");
+
+          if (this.state.sub === "chitra") {
+            this.state.speed = 0.5;
+            setTimeout(() => this.endAb(1), 3000);
+          } else if (this.state.sub === "harshul") {
+            this.state.obstacles = [];
+            this.state.speed = 2;
+            setTimeout(() => this.endAb(1), 3000);
+          } else if (this.state.sub === "vajra") {
+            this.state.speed = 3;
+            setTimeout(() => this.endAb(1), 2000);
+          } else {
+            setTimeout(() => this.endAb(1), 5000);
+          }
+        }
+        endAb(s) {
+          this.state.abilityActive = false;
+          this.state.speed = s;
+          document.getElementById("btn-ability").classList.remove("active");
+        }
+
+        start() {
+          this.audio.init();
+          if (this.audio.ctx && this.audio.ctx.state === "suspended")
+            this.audio.ctx.resume();
+
+          document.getElementById("menu-screen").style.opacity = 0;
+          document.getElementById("ui-layer").style.display = "flex";
+          setTimeout(
+            () =>
+              (document.getElementById("menu-screen").style.display = "none"),
+            500,
+          );
+
+          this.state.active = true;
+          this.loop();
+        }
+
+        update(dt) {
+          let decay = dt * 0.2;
+          if (this.state.sub === "chitra") decay *= 0.5;
+          this.state.time -= decay;
+          this.state.score += this.state.speed * dt;
+
+          // Leveling
+          const newLvl = 1 + Math.floor(this.state.score / 600);
+          if (newLvl > this.state.level) this.state.level = newLvl;
+
+          // Auto Pilot
+          if (this.state.sub === "brahma" && this.state.level >= 90) {
+            const threat = this.state.obstacles.find(
+              (o) =>
+                o.lane === this.state.lane && o.distance < 25 && o.distance > 5,
+            );
+            if (threat) {
+              const safe = [0, 1, 2].find(
+                (l) =>
+                  !this.state.obstacles.some(
+                    (o) => o.lane === l && o.distance < 30,
+                  ),
+              );
+              if (safe !== undefined) this.state.lane = safe;
+            }
+          }
+
+          // Spawn
+          if (Math.random() < 0.02) {
+            this.state.obstacles.push({
+              lane: Math.floor(Math.random() * 3),
+              distance: 100,
+            });
+          }
+
+          // Move
+          for (let i = this.state.obstacles.length - 1; i >= 0; i--) {
+            let o = this.state.obstacles[i];
+            o.distance -= this.state.speed;
+            if (this.checkCollision(o)) {
+              if (!this.state.abilityActive || this.state.sub === "chitra")
+                this.gameOver();
+            }
+            if (o.distance < 0) this.state.obstacles.splice(i, 1);
+          }
+          if (this.state.time <= 0) this.gameOver();
+          this.updateHUD();
+        }
+
+        updateHUD() {
+          const mins = Math.floor(this.state.time / 60);
+          const secs = Math.floor(this.state.time % 60);
+          document.getElementById("timer-val").innerText =
+            `${mins}:${secs.toString().padStart(2, "0")}`;
+          document.getElementById("level-val").innerText = this.state.level
+            .toString()
+            .padStart(2, "0");
+        }
+
+        gameOver() {
+          this.state.active = false;
+          if (this.state.score > this.highScore) {
+            this.highScore = Math.floor(this.state.score);
+            localStorage.setItem("cyberheritage_highscore", this.highScore);
+            document.getElementById("high-score-val").innerText =
+              this.highScore;
+          }
+
+          document.getElementById("end-screen").style.display = "flex";
+          if (this.audio.ctx)
+            this.audio.masterGain.gain.exponentialRampToValueAtTime(
+              0.001,
+              this.audio.ctx.currentTime + 1,
+            );
+        }
+
+        loop() {
+          if (!this.state.active) return;
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+          this.renderer.clear(this.state.speed);
+          this.renderer.drawTrack(this.state.speed);
+
+          this.state.obstacles.sort((a, b) => b.distance - a.distance);
+          this.state.obstacles.forEach((o) => {
+            if (o.distance >= 12) this.renderer.drawObject(o);
+          });
+
+          this.renderer.drawTrain(
+            this.state.lane,
+            this.state.sub,
+            auth.userImage,
+          );
+
+          this.state.obstacles.forEach((o) => {
+            if (o.distance < 12) this.renderer.drawObject(o);
+          });
+
+          this.update((16 / 1000) * 60);
+          requestAnimationFrame(() => this.loop());
+        }
+      }
+
+      // Init
+      const game = new Game();
+      const menu = {
+        select: (el, t) => {
+          document
+            .querySelectorAll(".sub-card")
+            .forEach((c) => c.classList.remove("selected"));
+          el.classList.add("selected");
+          game.state.sub = t;
+        },
+      };
+
+      // Keys
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") game.input("left");
+        if (e.key === "ArrowRight") game.input("right");
+        if (e.key === " ") game.input("ability");
+      });
+    </script>
+  </body>
+</html>

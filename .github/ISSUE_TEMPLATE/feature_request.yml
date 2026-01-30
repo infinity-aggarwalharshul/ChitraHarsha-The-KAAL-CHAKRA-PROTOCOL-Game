@@ -1,0 +1,11 @@
+name: ⚡ Feature Request
+description: Propose a new idea for the KAAL-CHAKRA PROTOCOL
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: feature
+    attributes:
+      label: Feature Description
+      description: What should we add?
+    validations:
+      required: true

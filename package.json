@@ -1,0 +1,23 @@
+{
+  "name": "chitraharsha-kaal-chakra",
+  "version": "1.0.0",
+  "description": "The KAAL-CHAKRA PROTOCOL Game",
+  "main": "index.html",
+  "scripts": {
+    "build": "copy \"index.html\" \"www/index.html\" && npx cap copy",
+    "sync": "npx cap sync",
+    "open:android": "npx cap open android",
+    "prod": "npm run build && npx cap sync android"
+  },
+  "keywords": [],
+  "author": "IAH Games",
+  "license": "ISC",
+  "dependencies": {
+    "@capacitor/android": "^6.2.1",
+    "@capacitor/core": "^6.2.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.1",
+    "typescript": "^5.9.3"
+  }
+}
