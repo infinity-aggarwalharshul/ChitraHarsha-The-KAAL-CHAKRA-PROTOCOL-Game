@@ -436,6 +436,19 @@
           overflow-y: auto;
         }
       }
+      .sub-card.locked {
+        filter: grayscale(1) opacity(0.5);
+        cursor: not-allowed;
+        border-style: dotted;
+      }
+      .sub-card.locked::after {
+        content: "🔒";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2rem;
+      }
     </style>
   </head>
   <body>
@@ -559,6 +572,19 @@
             <p style="color: #aaa; font-size: 0.8rem">Auto-Pilot AI.</p>
             <div class="char-img">🧠</div>
           </div>
+          <div
+            class="sub-card locked"
+            id="card-harsha"
+            onclick="menu.select(this, 'harsha')"
+          >
+            <div class="sub-header" style="color: #ff69b4">
+              HARSHA (Akashic)
+            </div>
+            <p style="color: #aaa; font-size: 0.8rem">
+              Bends Reality. (Lvl 50)
+            </p>
+            <div class="char-img">🌸</div>
+          </div>
         </div>
         <button
           class="btn-primary"
@@ -597,8 +623,17 @@
     <script>
       /**
        * CHITRA HARSHA: THE KAAL -CHAKRA PROTOCOL
-       * Version 3.1 Commercial Release (Vande Bharat Edition)
+       * Version 3.2 Commercial Edition
+       * Developed with Advanced Agentic Coding for the 2026 Ecosystem.
        */
+
+      /* --- ANALYTICS MODULE (Commercial Readiness) --- */
+      const analytics = {
+        logEvent: function (name, params) {
+          console.log(`[ANALYTICS] ${name}`, params);
+          // Future-ready for Firebase/Google Analytics 4 integration
+        },
+      };
 
       /* --- AUTH MODULE --- */
       const auth = {
@@ -656,8 +691,10 @@
             this.masterGain.connect(this.ctx.destination);
             this.initialized = true;
             this.startTrainAmbience();
+            analytics.logEvent("AUDIO_INITIALIZED", { status: "success" });
           } catch (e) {
-            console.warn("Audio blocked");
+            console.warn("Audio blocked or not supported", e);
+            analytics.logEvent("AUDIO_ERROR", { msg: e.message });
           }
         }
 
@@ -730,6 +767,17 @@
             osc.stop(t + 0.5);
           }
         }
+
+        speak(text, accent = "en-US") {
+          if (!window.speechSynthesis) return;
+          window.speechSynthesis.cancel();
+          const synth = window.speechSynthesis;
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.lang = accent === "rajasthani" ? "hi-IN" : accent;
+          utter.pitch = accent === "rajasthani" ? 1.2 : 1.0;
+          utter.rate = 0.9;
+          synth.speak(utter);
+        }
       }
 
       /* --- RENDER ENGINE --- */
@@ -748,6 +796,7 @@
               y: Math.random() * height,
               z: Math.random() * 2,
             }));
+          this.location = "Space"; // Space, Rajasthan, Tokyo, Paris
         }
 
         updateDimensions(width, height) {
@@ -775,11 +824,51 @@
           const ctx = this.ctx;
           // Cinematic Sky
           const grad = ctx.createLinearGradient(0, 0, 0, this.h);
-          grad.addColorStop(0, "#000");
-          grad.addColorStop(0.5, "#1a0a2e");
-          grad.addColorStop(1, "#2d1b4e");
+
+          if (this.location === "Rajasthan") {
+            grad.addColorStop(0, "#ff8c00"); // Orange sunset
+            grad.addColorStop(0.5, "#ffd700"); // Gold
+            grad.addColorStop(1, "#f4a460"); // Sandy
+          } else if (this.location === "Tokyo") {
+            grad.addColorStop(0, "#000033"); // Deep blue
+            grad.addColorStop(0.5, "#1a0a2e");
+            grad.addColorStop(1, "#660066"); // Neon purple
+          } else {
+            grad.addColorStop(0, "#000");
+            grad.addColorStop(0.5, "#1a0a2e");
+            grad.addColorStop(1, "#2d1b4e");
+          }
+
           ctx.fillStyle = grad;
           ctx.fillRect(0, 0, this.w, this.h);
+
+          // Location Specific Elements
+          if (this.location === "Rajasthan") {
+            // Desert Dunes
+            ctx.fillStyle = "rgba(237, 201, 175, 0.5)";
+            for (let i = 0; i < 3; i++) {
+              ctx.beginPath();
+              ctx.arc(
+                this.w * (i / 2),
+                this.horizonY + 20,
+                this.w / 2,
+                Math.PI,
+                0,
+              );
+              ctx.fill();
+            }
+          } else if (this.location === "Tokyo") {
+            // City Skyline
+            ctx.fillStyle = "#050510";
+            for (let i = 0; i < 10; i++) {
+              ctx.fillRect(
+                (i * this.w) / 10,
+                this.horizonY - (Math.random() * 100 + 50),
+                this.w / 15,
+                200,
+              );
+            }
+          }
 
           // Star Warp
           ctx.fillStyle = "#fff";
@@ -812,12 +901,14 @@
 
           // Sun/Moon
           ctx.shadowBlur = 50;
-          ctx.shadowColor = "#d4af37";
+          ctx.shadowColor =
+            this.location === "Rajasthan" ? "#ff4400" : "#d4af37";
           ctx.beginPath();
           ctx.arc(this.vanishX, this.horizonY - 80, 80, 0, Math.PI * 2);
           ctx.fillStyle = "#000";
           ctx.fill();
-          ctx.strokeStyle = "#d4af37";
+          ctx.strokeStyle =
+            this.location === "Rajasthan" ? "#ff4400" : "#d4af37";
           ctx.lineWidth = 3;
           ctx.stroke();
           ctx.shadowBlur = 0;
@@ -843,21 +934,45 @@
           const poleFreq = 20;
           const speedOffset = ((Date.now() / 10) * speed) % 100;
 
-          // Draw Poles on Left Side
+          // Draw Poles or Platforms
           for (let d = 0; d < 100; d += poleFreq) {
             let actualD = d - speedOffset / 5;
             if (actualD < 0) actualD += 100;
 
-            // Perspective for pole base
             const pBase = this.project(0, actualD);
-            const poleH = 200 * pBase.scale;
-            const poleX = pBase.x - 300 * pBase.scale; // Offset to left
+            const scale = pBase.scale;
 
-            if (pBase.scale > 0.1) {
+            if (scale > 0.1) {
+              // Occasional Platform with crowd
+              if (d % 60 === 0) {
+                const platX = pBase.x - 450 * scale;
+                ctx.fillStyle = "#333";
+                ctx.fillRect(
+                  platX,
+                  pBase.y - 10 * scale,
+                  300 * scale,
+                  20 * scale,
+                );
+                // Crowds
+                ctx.fillStyle = "#000";
+                for (let i = 0; i < 5; i++) {
+                  ctx.beginPath();
+                  ctx.arc(
+                    platX + (i * 50 + 20) * scale,
+                    pBase.y - 30 * scale,
+                    10 * scale,
+                    0,
+                    Math.PI * 2,
+                  );
+                  ctx.fill();
+                }
+              }
+
+              const poleH = 200 * scale;
+              const poleX = pBase.x - 300 * scale;
               ctx.beginPath();
               ctx.moveTo(poleX, pBase.y);
               ctx.lineTo(poleX, pBase.y - poleH);
-              // Cantilever arm
               ctx.lineTo(pBase.x, pBase.y - poleH);
               ctx.stroke();
             }
@@ -913,7 +1028,9 @@
               ? "#ffff00"
               : type === "harshul"
                 ? "#ff4400"
-                : "#00f3ff";
+                : type === "harsha"
+                  ? "#ff69b4"
+                  : "#00f3ff";
 
           // --- 1. COACH (Behind) ---
           this.drawCoach(ctx, 0, -size * 0.45, size, scale, glowColor);
@@ -1062,6 +1179,14 @@
             ctx.arc(wx, wy + winH, winW / 2, Math.PI, 0);
             ctx.fill();
 
+            // Localized Visuals (Rajasthan)
+            if (game.renderer.location === "Rajasthan") {
+              ctx.fillStyle = i === 0 ? "#f44" : "#fb0"; // Colorful turbans
+              ctx.beginPath();
+              ctx.arc(wx, wy + winH / 2 - 2 * scale, winW / 3.5, Math.PI, 0);
+              ctx.fill();
+            }
+
             // Phone/Device Glow
             if (Math.random() > 0.5) {
               ctx.fillStyle = "#aaf";
@@ -1152,6 +1277,8 @@
             obstacles: [],
             sub: "chitra",
             abilityActive: false,
+            location: "Space",
+            locked: { harsha: true },
           };
         }
 
@@ -1213,6 +1340,14 @@
           );
 
           this.state.active = true;
+          this.audio.speak(
+            "System Online. Pilot " + auth.username + " verified.",
+            "en-US",
+          );
+          analytics.logEvent("GAME_START", {
+            sub: this.state.sub,
+            pilot: auth.username,
+          });
           this.loop();
         }
 
@@ -1222,9 +1357,36 @@
           this.state.time -= decay;
           this.state.score += this.state.speed * dt;
 
-          // Leveling
+          // Leveling & Location Switching
           const newLvl = 1 + Math.floor(this.state.score / 600);
-          if (newLvl > this.state.level) this.state.level = newLvl;
+          if (newLvl > this.state.level) {
+            this.state.level = newLvl;
+
+            // Location Logic
+            if (this.state.level === 10) {
+              this.renderer.location = "Rajasthan";
+              this.audio.speak(
+                "Entering Marusthal Sector. Keep your cool, Pilot.",
+                "rajasthani",
+              );
+            } else if (this.state.level === 30) {
+              this.renderer.location = "Tokyo";
+              this.audio.speak(
+                "Neo Tokyo Sector reached. Velocity protocol active.",
+                "en-US",
+              );
+            }
+
+            // Unlock Harsha
+            if (this.state.level >= 50 && this.state.locked.harsha) {
+              this.state.locked.harsha = false;
+              document.getElementById("card-harsha").classList.remove("locked");
+              this.audio.speak(
+                "Reality Bender Protocol: HARSHA Unlocked.",
+                "hi-IN",
+              );
+            }
+          }
 
           // Auto Pilot
           if (this.state.sub === "brahma" && this.state.level >= 90) {
@@ -1285,6 +1447,10 @@
           }
 
           document.getElementById("end-screen").style.display = "flex";
+          analytics.logEvent("GAME_OVER", {
+            score: this.state.score,
+            level: this.state.level,
+          });
           if (this.audio.ctx)
             this.audio.masterGain.gain.exponentialRampToValueAtTime(
               0.001,
@@ -1322,6 +1488,13 @@
       const game = new Game();
       const menu = {
         select: (el, t) => {
+          if (el.classList.contains("locked")) {
+            game.audio.speak(
+              "Protocol Locked. Minimum Sector 50 required.",
+              "en-US",
+            );
+            return;
+          }
           document
             .querySelectorAll(".sub-card")
             .forEach((c) => c.classList.remove("selected"));
